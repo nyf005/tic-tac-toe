@@ -11,3 +11,15 @@ const Player = (symbol) => {
 
   return { getSymbol };
 };
+
+const gameBoard = (() => {
+  let _gameboard = [];
+
+  const setSquare = (index, symbol) => {
+    if (index < 1 || index > 9) return;
+  };
+
+  const resetGameBoard = () => {};
+
+  return { setSquare, resetGameBoard };
+})();
