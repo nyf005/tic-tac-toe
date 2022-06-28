@@ -57,11 +57,11 @@ img {
 main {
   display: grid;
   grid-template-areas:
-    "board controls"
-    "message controls";
+    "message"
+    "board"
+    "controls";
 
-  grid-template-columns: 3fr 1fr;
-  grid-template-rows: 4fr 1fr;
+  grid-template-rows: 1fr 3fr 1fr;
   gap: 0.7rem;
 }
 
@@ -78,32 +78,37 @@ main {
   grid-area: message;
 }
 
+#controls {
+  grid-area: controls;
+}
+
 #board,
-#message {
+#message,
+#controls {
   display: grid;
   place-content: center;
 }
 
-#controls {
-  grid-area: controls;
-  padding: 1rem;
-}
-
 #gameboard {
-  /* margin: 1rem; */
   background-color: var(--accent-color);
   display: grid;
   grid-template-columns: repeat(3, minmax(120px, 1fr));
   grid-template-rows: repeat(3, minmax(120px, 1fr));
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .square {
   background-color: #000;
   display: grid;
   place-content: center;
-  font-size: 8rem;
+  font-size: 6rem;
   font-weight: bold;
+  -webkit-user-select: none; /* Safari */
+  user-select: none;
+}
+
+.square:active {
+  background-color: #ccc;
 }
 
 .player-o {
