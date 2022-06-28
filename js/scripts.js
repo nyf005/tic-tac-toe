@@ -23,3 +23,18 @@ const gameBoard = (() => {
 
   return { setSquare, resetGameBoard };
 })();
+
+const displayController = (() => {
+  // Get display elements
+  const _squares = document.querySelectorAll(".square");
+  const _message = document.querySelector("#message p");
+
+  // Display who's turn it is
+  const showTurn = (player) => {
+    _message.textContent = `This is player ${player.getSymbol()}'s turn`;
+  };
+
+  const showSymbol = (player) => {};
+
+  return { showTurn, showSymbol };
+})();
