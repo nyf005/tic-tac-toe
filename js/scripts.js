@@ -15,7 +15,7 @@ const Player = (symbol) => {
 const gameBoard = (() => {
   let _gameboard = [];
 
-  const setSquare = (index, symbol) => {
+  const setSquare = (index, player) => {
     if (index < 1 || index > 9) return;
   };
 
@@ -31,10 +31,17 @@ const displayController = (() => {
 
   // Display who's turn it is
   const showTurn = (player) => {
-    _message.textContent = `This is player ${player.getSymbol()}'s turn`;
+    _message.textContent = `Player ${player.getSymbol()}'s turn`;
   };
 
   const showSymbol = (player) => {};
 
   return { showTurn, showSymbol };
+})();
+
+const gameController = (() => {
+  const _playerX = Player("X");
+  const _playerO = Player("O");
+
+  displayController.showTurn(_playerO);
 })();
