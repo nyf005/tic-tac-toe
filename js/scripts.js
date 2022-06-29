@@ -50,6 +50,10 @@ const displayController = (() => {
     _message.textContent = `Player ${player.getSymbol().toUpperCase()}'s turn`;
   };
 
+  const displayWinner = (player) => {
+    _message.textContent = `Player ${player.getSymbol().toUpperCase()} wins`;
+  };
+
   //
   const addSymbolToBoard = (square, player) => {
     if (square.textContent != "") return;
@@ -59,7 +63,7 @@ const displayController = (() => {
     square.textContent = player.getSymbol();
   };
 
-  return { showTurn, addSymbolToBoard };
+  return { showTurn, addSymbolToBoard, displayWinner };
 })();
 
 const gameController = (() => {
@@ -78,6 +82,7 @@ const gameController = (() => {
   const _playerO = Player("o");
   let _currentPlayer = _playerX;
   let _pChoices;
+  let _winner = false;
 
   displayController.showTurn(_currentPlayer);
 
@@ -94,14 +99,17 @@ const gameController = (() => {
       _winningConditions.forEach((condition) => {
         // Return true if current player choices contains each value of the current winning condition
         if (condition.every((value) => _pChoices.includes(value))) {
-          console.log(condition, _pChoices);
-          console.log(_currentPlayer.getSymbol());
+          _winner = true;
         }
       });
 
-      // Assuming player 1 is X we set next player based on gameboard array size
-      _currentPlayer = gameBoard.getGbLength() % 2 == 1 ? _playerO : _playerX;
-      displayController.showTurn(_currentPlayer);
+      if (_winner) {
+        displayController.displayWinner(_currentPlayer);
+      } else {
+        // Assuming player 1 is X we set next player based on gameboard array size
+        _currentPlayer = gameBoard.getGbLength() % 2 == 1 ? _playerO : _playerX;
+        displayController.showTurn(_currentPlayer);
+      }
     });
   });
 })();
