@@ -11,7 +11,7 @@ const Player = (symbol) => {
   };
 
   const addChoice = (choice) => {
-    _choices.push(choice);
+    _choices.push(Number(choice));
   };
 
   const getChoices = () => {
@@ -77,6 +77,7 @@ const gameController = (() => {
   const _playerX = Player("x");
   const _playerO = Player("o");
   let _currentPlayer = _playerX;
+  let _pChoices;
 
   displayController.showTurn(_currentPlayer);
 
@@ -86,7 +87,19 @@ const gameController = (() => {
       gameBoard.setChoice(index, _currentPlayer);
       displayController.addSymbolToBoard(square, _currentPlayer);
 
-      // Assuming player 1 is X we set next player based on gaemboard array size
+      // Retrieve the updated array of current player choices
+      _pChoices = _currentPlayer.getChoices();
+
+      // Check if there is a winner
+      _winningConditions.forEach((condition) => {
+        // Return true if current player choices contains each value of the current winning condition
+        if (condition.every((value) => _pChoices.includes(value))) {
+          console.log(condition, _pChoices);
+          console.log(_currentPlayer.getSymbol());
+        }
+      });
+
+      // Assuming player 1 is X we set next player based on gameboard array size
       _currentPlayer = gameBoard.getGbLength() % 2 == 1 ? _playerO : _playerX;
       displayController.showTurn(_currentPlayer);
     });
