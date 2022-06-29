@@ -4,12 +4,21 @@
 
 const Player = (symbol) => {
   let _playerSymbol = symbol;
+  let _choices = [];
 
   const getSymbol = () => {
     return _playerSymbol;
   };
 
-  return { getSymbol };
+  const addChoice = (choice) => {
+    _choices.push(choice);
+  };
+
+  const getChoices = () => {
+    return _choices;
+  };
+
+  return { getSymbol, getChoices, addChoice };
 };
 
 const gameBoard = (() => {
@@ -17,9 +26,10 @@ const gameBoard = (() => {
   let _gameboard = [];
 
   // Add index of square chosen by player to array
-  const setChoice = (index) => {
+  const setChoice = (index, player) => {
     if (!(index > 0 && index < 10) || _gameboard.includes(index)) return;
     _gameboard.push(index);
+    player.addChoice(index);
   };
 
   const resetGameBoard = () => {};
@@ -47,7 +57,7 @@ const displayController = (() => {
 
 const gameController = (() => {
   const _squares = document.querySelectorAll(".square");
-  const _winningCOnditions = [
+  const _winningConditions = [
     [1, 2, 3],
     [4, 5, 6],
     [7, 8, 9],
@@ -65,8 +75,9 @@ const gameController = (() => {
   _squares.forEach((square) => {
     square.addEventListener("click", () => {
       let index = square.getAttribute("data-index");
-      gameBoard.setChoice(index);
-      displayController.addSymbolToBoard(square, _playerO);
+      gameBoard.setChoice(index, _playerX);
+      displayController.addSymbolToBoard(square, _playerX);
+      console.log(_playerX.getChoices());
     });
   });
 })();
