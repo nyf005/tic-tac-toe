@@ -107,14 +107,14 @@ main {
   user-select: none;
 }
 
-.square:active {
+.square:empty:hover {
   background-color: #ccc;
 }
 
-/* .player-o {
+.player-o {
   color: var(--primary-color);
 }
 
 .player-x {
   color: var(--secondary-color);
-} */
+}

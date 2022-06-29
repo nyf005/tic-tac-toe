@@ -40,8 +40,6 @@ const displayController = (() => {
   const addSymbolToBoard = (square, player) => {
     if (square.textContent != "") return;
     square.textContent = player.getSymbol();
-    square.style.backgroundColor =
-      player.getSymbol() == "x" ? "#ffc200" : "#fa5c0c";
   };
 
   return { showTurn, addSymbolToBoard };
