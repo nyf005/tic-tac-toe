@@ -32,13 +32,13 @@ const gameBoard = (() => {
     player.addChoice(index);
   };
 
-  let gbLength = () => {
+  const getGbLength = () => {
     return _gameboard.length;
   };
 
   const resetGameBoard = () => {};
 
-  return { setChoice, resetGameBoard, gbLength };
+  return { setChoice, resetGameBoard, getGbLength };
 })();
 
 const displayController = (() => {
@@ -53,6 +53,9 @@ const displayController = (() => {
   //
   const addSymbolToBoard = (square, player) => {
     if (square.textContent != "") return;
+    player.getSymbol() == "x"
+      ? square.classList.add("player-x")
+      : square.classList.add("player-o");
     square.textContent = player.getSymbol();
   };
 
@@ -84,7 +87,7 @@ const gameController = (() => {
       displayController.addSymbolToBoard(square, _currentPlayer);
 
       // Assuming player 1 is X we set next player based on gaemboard array size
-      _currentPlayer = gameBoard.gbLength() % 2 == 1 ? _playerO : _playerX;
+      _currentPlayer = gameBoard.getGbLength() % 2 == 1 ? _playerO : _playerX;
       displayController.showTurn(_currentPlayer);
     });
   });
