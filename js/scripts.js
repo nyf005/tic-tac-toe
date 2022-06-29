@@ -32,9 +32,13 @@ const gameBoard = (() => {
     player.addChoice(index);
   };
 
+  let gbLength = () => {
+    return _gameboard.length;
+  };
+
   const resetGameBoard = () => {};
 
-  return { setChoice, resetGameBoard };
+  return { setChoice, resetGameBoard, gbLength };
 })();
 
 const displayController = (() => {
@@ -69,15 +73,19 @@ const gameController = (() => {
   ];
   const _playerX = Player("x");
   const _playerO = Player("o");
+  let _currentPlayer = _playerX;
 
-  displayController.showTurn(_playerX);
+  displayController.showTurn(_currentPlayer);
 
   _squares.forEach((square) => {
     square.addEventListener("click", () => {
       let index = square.getAttribute("data-index");
-      gameBoard.setChoice(index, _playerX);
-      displayController.addSymbolToBoard(square, _playerX);
-      console.log(_playerX.getChoices());
+      gameBoard.setChoice(index, _currentPlayer);
+      displayController.addSymbolToBoard(square, _currentPlayer);
+
+      // Assuming player 1 is X we set next player based on gaemboard array size
+      _currentPlayer = gameBoard.gbLength() % 2 == 1 ? _playerO : _playerX;
+      displayController.showTurn(_currentPlayer);
     });
   });
 })();
