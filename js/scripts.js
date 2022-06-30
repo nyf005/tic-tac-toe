@@ -44,6 +44,7 @@ const gameBoard = (() => {
 const displayController = (() => {
   // Get display elements
   const _message = document.querySelector("#message p");
+  const _locker = document.getElementById("locker");
 
   // Display who's turn it is
   const showTurn = (player) => {
@@ -52,11 +53,16 @@ const displayController = (() => {
 
   const displayWinner = (player) => {
     _message.textContent = `Player ${player.getSymbol().toUpperCase()} wins`;
+    _lockBoard();
+  };
+
+  const _lockBoard = () => {
+    _locker.style.display = "grid";
   };
 
   //
-  const addSymbolToBoard = (square, player) => {
-    if (square.textContent != "") return;
+  const addSymbolToBoard = (square, player, winner) => {
+    if (square.textContent != "" || winner) return;
     player.getSymbol() == "x"
       ? square.classList.add("player-x")
       : square.classList.add("player-o");
@@ -90,7 +96,7 @@ const gameController = (() => {
     square.addEventListener("click", () => {
       let index = square.getAttribute("data-index");
       gameBoard.setChoice(index, _currentPlayer);
-      displayController.addSymbolToBoard(square, _currentPlayer);
+      displayController.addSymbolToBoard(square, _currentPlayer, _winner);
 
       // Retrieve the updated array of current player choices
       _pChoices = _currentPlayer.getChoices();

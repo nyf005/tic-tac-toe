@@ -95,6 +95,8 @@ main {
   grid-template-columns: repeat(3, minmax(120px, 1fr));
   grid-template-rows: repeat(3, minmax(120px, 1fr));
   gap: 0.8rem;
+
+  position: relative;
 }
 
 .square {
@@ -117,4 +119,22 @@ main {
 
 .player-x {
   color: var(--secondary-color);
+}
+
+#locker {
+  color: #fff;
+  display: none;
+  place-content: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(47, 72, 88, 0.5);
+  z-index: 1;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#locker p {
+  font-size: 3rem;
+  font-weight: bold;
 }
