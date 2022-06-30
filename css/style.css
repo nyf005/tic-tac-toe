@@ -78,8 +78,7 @@ main {
 }
 
 #board,
-#message,
-#controls {
+#message {
   display: grid;
   place-content: center;
 }
@@ -139,38 +138,59 @@ main {
   font-weight: bold;
 }
 
-#restartBtn {
+#controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn {
+  height: 3rem;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-  padding: 0 1rem 0 0.5rem;
+  padding: 0.2rem 1rem 0.2rem 0.5rem;
   font-weight: bold;
-  color: #fff;
-  background-color: var(--accent-color);
-  border: 5px solid transparent;
   border-radius: 50px;
   transition: 0.2s ease;
+  color: #fff;
+  border: 5px solid transparent;
 }
 
-#restartBtn img {
+.btn img {
   margin: auto;
-  width: 2rem;
   filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(129deg)
     brightness(104%) contrast(109%);
 }
 
-#restartBtn:hover {
+.btn:hover {
   color: #000;
   background-color: #fff;
-  border: 5px solid var(--accent-color);
 }
 
-#restartBtn:hover img {
+.btn:hover img {
   filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(294deg) brightness(94%)
     contrast(105%);
 }
 
-#restartBtn:active {
+.btn:active {
   transform: scale(0.9);
+}
+
+.btn:first-child {
+  background-color: var(--accent-color);
+}
+
+.btn:first-child:hover {
+  border: 5px solid var(--accent-color);
+}
+
+button:last-child {
+  background-color: red;
+}
+
+button:last-child:hover {
+  border: 5px solid red;
 }
