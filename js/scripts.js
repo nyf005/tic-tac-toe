@@ -48,11 +48,17 @@ const displayController = (() => {
 
   // Display who's turn it is
   const showTurn = (player) => {
+    _message.style.color = player.getSymbol() == "x" ? "#ffc200" : "#fa5c0c";
     _message.textContent = `Player ${player.getSymbol().toUpperCase()}'s turn`;
   };
 
   const displayWinner = (player) => {
-    _message.textContent = `Player ${player.getSymbol().toUpperCase()} wins`;
+    if (player) {
+      _message.textContent = `Player ${player.getSymbol().toUpperCase()} wins`;
+    } else {
+      _message.style.color = "#05ccab";
+      _message.textContent = `This is a tie game`;
+    }
     _lockBoard();
   };
 
@@ -111,6 +117,8 @@ const gameController = (() => {
 
       if (_winner) {
         displayController.displayWinner(_currentPlayer);
+      } else if (gameBoard.getGbLength() == 9) {
+        displayController.displayWinner();
       } else {
         // Assuming player 1 is X we set next player based on gameboard array size
         _currentPlayer = gameBoard.getGbLength() % 2 == 1 ? _playerO : _playerX;
