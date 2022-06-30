@@ -18,7 +18,11 @@ const Player = (symbol) => {
     return _choices;
   };
 
-  return { getSymbol, getChoices, addChoice };
+  const resetChoices = () => {
+    _choices = [];
+  };
+
+  return { getSymbol, getChoices, addChoice, resetChoices };
 };
 
 const gameBoard = (() => {
@@ -36,16 +40,25 @@ const gameBoard = (() => {
     return _gameboard.length;
   };
 
-  const resetGameBoard = () => {};
+  const reset = (playerX, playerO) => {
+    _gameboard = [];
+    playerX.resetChoices();
+    playerO.resetChoices();
+    displayController.reset();
+  };
 
-  return { setChoice, resetGameBoard, getGbLength };
+  return { setChoice, reset, getGbLength };
 })();
 
 const displayController = (() => {
   // Get display elements
+  const _squares = document.querySelectorAll(".square");
   const _message = document.querySelector("#message p");
   const _locker = document.getElementById("locker");
 
+  const getSquares = () => {
+    return _squares;
+  };
   // Display who's turn it is
   const showTurn = (player) => {
     _message.style.color = player.getSymbol() == "x" ? "#ffc200" : "#fa5c0c";
@@ -59,11 +72,15 @@ const displayController = (() => {
       _message.style.color = "#05ccab";
       _message.textContent = `This is a tie game`;
     }
-    _lockBoard();
+    _showLockBoard();
   };
 
-  const _lockBoard = () => {
+  const _showLockBoard = () => {
     _locker.style.display = "grid";
+  };
+
+  const _hideLockBoard = () => {
+    _locker.style.display = "none";
   };
 
   //
@@ -75,11 +92,26 @@ const displayController = (() => {
     square.textContent = player.getSymbol();
   };
 
-  return { showTurn, addSymbolToBoard, displayResult };
+  const reset = () => {
+    _squares.forEach((square) => {
+      square.textContent == "x"
+        ? square.classList.remove("player-x")
+        : square.classList.remove("player-o");
+      square.textContent = "";
+    });
+    _hideLockBoard();
+  };
+
+  return {
+    getSquares,
+    showTurn,
+    addSymbolToBoard,
+    displayResult,
+    reset,
+  };
 })();
 
 const gameController = (() => {
-  const _squares = document.querySelectorAll(".square");
   const _winningConditions = [
     [1, 2, 3],
     [4, 5, 6],
@@ -95,10 +127,11 @@ const gameController = (() => {
   let _currentPlayer = _playerX;
   let _pChoices;
   let _winner = false;
+  const _restartBtn = document.getElementById("restartBtn");
 
   displayController.showTurn(_currentPlayer);
 
-  _squares.forEach((square) => {
+  displayController.getSquares().forEach((square) => {
     square.addEventListener("click", () => {
       let index = square.getAttribute("data-index");
       gameBoard.setChoice(index, _currentPlayer);
@@ -125,5 +158,12 @@ const gameController = (() => {
         displayController.showTurn(_currentPlayer);
       }
     });
+  });
+
+  _restartBtn.addEventListener("click", () => {
+    _winner = false;
+    _currentPlayer = _playerX;
+    displayController.showTurn(_currentPlayer);
+    gameBoard.reset(_playerX, _playerO);
   });
 })();
