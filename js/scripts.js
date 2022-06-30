@@ -52,7 +52,7 @@ const displayController = (() => {
     _message.textContent = `Player ${player.getSymbol().toUpperCase()}'s turn`;
   };
 
-  const displayWinner = (player) => {
+  const displayResult = (player) => {
     if (player) {
       _message.textContent = `Player ${player.getSymbol().toUpperCase()} wins`;
     } else {
@@ -75,7 +75,7 @@ const displayController = (() => {
     square.textContent = player.getSymbol();
   };
 
-  return { showTurn, addSymbolToBoard, displayWinner };
+  return { showTurn, addSymbolToBoard, displayResult };
 })();
 
 const gameController = (() => {
@@ -116,9 +116,9 @@ const gameController = (() => {
       });
 
       if (_winner) {
-        displayController.displayWinner(_currentPlayer);
+        displayController.displayResult(_currentPlayer);
       } else if (gameBoard.getGbLength() == 9) {
-        displayController.displayWinner();
+        displayController.displayResult();
       } else {
         // Assuming player 1 is X we set next player based on gameboard array size
         _currentPlayer = gameBoard.getGbLength() % 2 == 1 ? _playerO : _playerX;
