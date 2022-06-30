@@ -35,11 +35,33 @@
       </div>
       <div id="message">
         <p></p>
+
+        <form action="#">
+          <div class="form-field">
+            <label for="playerX">Player X:</label>
+            <input
+              type="text"
+              name="player-x"
+              id="playerX"
+              placeholder="Player X's name"
+            />
+          </div>
+          <div class="form-field">
+            <label for="playerO">Player O:</label>
+            <input
+              type="text"
+              name="player-o"
+              id="playerO"
+              placeholder="Player O's name"
+            />
+          </div>
+          <button type="submit">Submit</button>
+        </form>
       </div>
       <div id="controls">
         <button id="startBtn" class="btn">
           <img src="./assets/img/start.svg" alt="" srcset="" />
-          <span>New game</span>
+          <span>New Game</span>
         </button>
         <button id="restartBtn" class="btn">
           <img src="./assets/img/restart.svg" alt="" srcset="" />

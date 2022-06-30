@@ -127,6 +127,7 @@ const gameController = (() => {
   let _currentPlayer = _playerX;
   let _pChoices;
   let _winner = false;
+  const _startBtn = document.getElementById("startBtn");
   const _restartBtn = document.getElementById("restartBtn");
 
   displayController.showTurn(_currentPlayer);
@@ -150,9 +151,12 @@ const gameController = (() => {
 
       if (_winner) {
         displayController.displayResult(_currentPlayer);
+        _startBtn.removeAttribute("disabled");
       } else if (gameBoard.getGbLength() == 9) {
         displayController.displayResult();
+        _startBtn.removeAttribute("disabled");
       } else {
+        _startBtn.setAttribute("disabled", "disabled");
         // Assuming player 1 is X we set next player based on gameboard array size
         _currentPlayer = gameBoard.getGbLength() % 2 == 1 ? _playerO : _playerX;
         displayController.showTurn(_currentPlayer);
@@ -165,5 +169,6 @@ const gameController = (() => {
     _currentPlayer = _playerX;
     displayController.showTurn(_currentPlayer);
     gameBoard.reset(_playerX, _playerO);
+    _startBtn.removeAttribute("disabled");
   });
 })();

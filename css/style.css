@@ -62,7 +62,12 @@ main {
     "controls";
 
   grid-template-rows: 1fr 3fr 1fr;
-  gap: 0.7rem;
+}
+
+#board,
+#message {
+  display: grid;
+  place-content: center;
 }
 
 #board {
@@ -75,12 +80,6 @@ main {
 
 #controls {
   grid-area: controls;
-}
-
-#board,
-#message {
-  display: grid;
-  place-content: center;
 }
 
 #message p {
@@ -145,7 +144,8 @@ main {
   gap: 1rem;
 }
 
-.btn {
+#startBtn,
+#restartBtn {
   height: 3rem;
   display: flex;
   justify-content: center;
@@ -154,43 +154,97 @@ main {
   padding: 0.2rem 1rem 0.2rem 0.5rem;
   font-weight: bold;
   border-radius: 50px;
-  transition: 0.2s ease;
   color: #fff;
   border: 5px solid transparent;
+  transition: 0.2s ease;
 }
 
-.btn img {
+#startBtn img,
+#restartBtn img {
   margin: auto;
   filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(129deg)
     brightness(104%) contrast(109%);
 }
 
-.btn:hover {
+#startBtn:hover,
+#restartBtn:hover {
   color: #000;
   background-color: #fff;
 }
 
-.btn:hover img {
+#startBtn:hover img,
+#restartBtn:hover img {
   filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(294deg) brightness(94%)
     contrast(105%);
 }
 
-.btn:active {
+#startBtn:active,
+#restartBtn:active,
+form button:active {
   transform: scale(0.9);
 }
 
-.btn:first-child {
+#startBtn {
   background-color: var(--accent-color);
 }
 
-.btn:first-child:hover {
+#startBtn:hover {
   border: 5px solid var(--accent-color);
 }
 
-button:last-child {
+#restartBtn {
   background-color: red;
 }
 
-button:last-child:hover {
+#restartBtn:hover {
   border: 5px solid red;
+}
+
+#startBtn[disabled],
+#restartBtn[disabled] {
+  transform: none;
+  background-color: #d9d9d9;
+  border: 5px solid #d9d9d9;
+  color: #ccc;
+}
+
+#startBtn[disabled]:hover,
+#restartBtn[disabled]:hover {
+  background-color: #d9d9d9;
+  border: 5px solid #d9d9d9;
+}
+
+#startBtn[disabled] img,
+#restartBtn[disabled] img {
+  filter: invert(92%) sepia(4%) saturate(11%) hue-rotate(314deg) brightness(91%)
+    contrast(87%);
+}
+
+form {
+  display: flex;
+  gap: 1rem;
+}
+
+label {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+input {
+  padding: 0.5rem;
+  outline: none;
+}
+
+form button {
+  padding: 0 1rem;
+  background-color: #000;
+  color: #fff;
+  border: 5px solid #000;
+  border-radius: 50px;
+  transition: 0.2s ease;
+}
+
+form button:hover {
+  background-color: #fff;
+  color: #000;
 }
