@@ -221,8 +221,15 @@ form button:active {
 }
 
 form {
+  display: none;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.form-field {
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
 label {
@@ -231,11 +238,19 @@ label {
 }
 
 input {
+  width: 9rem;
   padding: 0.5rem;
   outline: none;
+  border: 1px solid #ccc;
+}
+
+input:focus {
+  border: 1px solid #000;
+  box-shadow: 0 3px 5px #e5e7eb;
 }
 
 form button {
+  height: 2.2rem;
   padding: 0 1rem;
   background-color: #000;
   color: #fff;

@@ -2,12 +2,19 @@
 // if you only ever need ONE of something (gameBoard, displayController), use a module.
 // If you need multiples of something (players!), create them with factories.
 
-const Player = (symbol) => {
+const Player = (symbol, name) => {
   let _playerSymbol = symbol;
+  let _playerName = name;
   let _choices = [];
 
   const getSymbol = () => {
     return _playerSymbol;
+  };
+
+  getName = () => {
+    return _playerName
+      ? _playerName[0].toUpperCase() + _playerName.slice(1)
+      : `Player ${_playerSymbol.toUpperCase()}`;
   };
 
   const addChoice = (choice) => {
@@ -22,9 +29,10 @@ const Player = (symbol) => {
     _choices = [];
   };
 
-  return { getSymbol, getChoices, addChoice, resetChoices };
+  return { getSymbol, getName, getChoices, addChoice, resetChoices };
 };
 
+// GAMEBOARD
 const gameBoard = (() => {
   // odd number for pX and even number for pO
   let _gameboard = [];
@@ -50,6 +58,7 @@ const gameBoard = (() => {
   return { setChoice, reset, getGbLength };
 })();
 
+// DISPLAY CONTROLLER
 const displayController = (() => {
   // Get display elements
   const _squares = document.querySelectorAll(".square");
@@ -59,37 +68,49 @@ const displayController = (() => {
   const getSquares = () => {
     return _squares;
   };
+
   // Display who's turn it is
   const showTurn = (player) => {
     _message.style.color = player.getSymbol() == "x" ? "#ffc200" : "#fa5c0c";
-    _message.textContent = `Player ${player.getSymbol().toUpperCase()}'s turn`;
+    _message.textContent = `${player.getName()}'s turn`;
   };
 
-  const displayResult = (player) => {
+  const showResult = (player) => {
     if (player) {
-      _message.textContent = `Player ${player.getSymbol().toUpperCase()} wins`;
+      _message.textContent = `${player.getName()} wins`;
     } else {
       _message.style.color = "#05ccab";
       _message.textContent = `This is a tie game`;
     }
-    _showLockBoard();
+
+    _locker.innerHTML = "<p>Game Over</p>";
+    showLockBoard();
   };
 
-  const _showLockBoard = () => {
+  const showLockBoard = () => {
     _locker.style.display = "grid";
   };
 
-  const _hideLockBoard = () => {
+  const hideLockBoard = () => {
     _locker.style.display = "none";
   };
 
-  //
   const addSymbolToBoard = (square, player, winner) => {
     if (square.textContent != "" || winner) return;
     player.getSymbol() == "x"
       ? square.classList.add("player-x")
       : square.classList.add("player-o");
     square.textContent = player.getSymbol();
+  };
+
+  const showForm = (form) => {
+    form.style.display = "flex";
+    _message.style.display = "none";
+  };
+
+  const hideForm = (form) => {
+    form.style.display = "none";
+    _message.style.display = "block";
   };
 
   const reset = () => {
@@ -99,19 +120,28 @@ const displayController = (() => {
         : square.classList.remove("player-o");
       square.textContent = "";
     });
-    _hideLockBoard();
+    hideLockBoard();
   };
 
   return {
     getSquares,
     showTurn,
+    showLockBoard,
+    hideLockBoard,
     addSymbolToBoard,
-    displayResult,
+    showResult,
+    showForm,
+    hideForm,
     reset,
   };
 })();
 
+// GAME CONTROLLER
 const gameController = (() => {
+  const _form = document.querySelector("form");
+  const _pX = document.getElementById("playerX");
+  const _pO = document.getElementById("playerO");
+
   const _winningConditions = [
     [1, 2, 3],
     [4, 5, 6],
@@ -122,15 +152,33 @@ const gameController = (() => {
     [1, 5, 9],
     [3, 5, 7],
   ];
-  const _playerX = Player("x");
-  const _playerO = Player("o");
+  let _playerX = Player("x");
+  let _playerO = Player("o");
+
   let _currentPlayer = _playerX;
   let _pChoices;
   let _winner = false;
+
   const _startBtn = document.getElementById("startBtn");
   const _restartBtn = document.getElementById("restartBtn");
 
-  displayController.showTurn(_currentPlayer);
+  displayController.showLockBoard();
+  _restartBtn.setAttribute("disabled", "disabled");
+
+  _form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    _playerX = Player("x", _pX.value);
+    _playerO = Player("o", _pO.value);
+
+    _form.reset();
+
+    _currentPlayer = _playerX;
+    _restartBtn.removeAttribute("disabled");
+    displayController.hideForm(_form);
+    displayController.hideLockBoard();
+    displayController.showTurn(_currentPlayer);
+    gameBoard.reset(_playerX, _playerO);
+  });
 
   displayController.getSquares().forEach((square) => {
     square.addEventListener("click", () => {
@@ -150,10 +198,10 @@ const gameController = (() => {
       });
 
       if (_winner) {
-        displayController.displayResult(_currentPlayer);
+        displayController.showResult(_currentPlayer);
         _startBtn.removeAttribute("disabled");
       } else if (gameBoard.getGbLength() == 9) {
-        displayController.displayResult();
+        displayController.showResult();
         _startBtn.removeAttribute("disabled");
       } else {
         _startBtn.setAttribute("disabled", "disabled");
@@ -162,6 +210,13 @@ const gameController = (() => {
         displayController.showTurn(_currentPlayer);
       }
     });
+  });
+
+  _startBtn.addEventListener("click", () => {
+    _winner = false;
+    gameBoard.reset(_playerX, _playerO);
+    displayController.showLockBoard();
+    displayController.showForm(_form);
   });
 
   _restartBtn.addEventListener("click", () => {
