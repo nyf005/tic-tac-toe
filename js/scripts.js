@@ -5,6 +5,7 @@
 const Player = (symbol, name) => {
   let _playerSymbol = symbol;
   let _playerName = name;
+  let _score = 0;
   let _choices = [];
 
   const getSymbol = () => {
@@ -13,7 +14,7 @@ const Player = (symbol, name) => {
 
   getName = () => {
     return _playerName
-      ? _playerName[0].toUpperCase() + _playerName.slice(1)
+      ? _playerName[0].toUpperCase() + _playerName.slice(1).toLowerCase()
       : `Player ${_playerSymbol.toUpperCase()}`;
   };
 
@@ -25,11 +26,32 @@ const Player = (symbol, name) => {
     return _choices;
   };
 
+  const incrementScore = () => {
+    _score++;
+  };
+
+  const getScore = () => {
+    return _score;
+  };
+
+  const resetScore = () => {
+    _score = 0;
+  };
+
   const resetChoices = () => {
     _choices = [];
   };
 
-  return { getSymbol, getName, getChoices, addChoice, resetChoices };
+  return {
+    getSymbol,
+    getName,
+    getChoices,
+    addChoice,
+    getScore,
+    incrementScore,
+    resetChoices,
+    resetScore,
+  };
 };
 
 // GAMEBOARD
@@ -64,6 +86,10 @@ const displayController = (() => {
   const _squares = document.querySelectorAll(".square");
   const _message = document.querySelector("#message p");
   const _locker = document.getElementById("locker");
+  const _pXName = document.querySelector("#player-x h1");
+  const _pXScore = document.querySelector("#player-x p");
+  const _pOName = document.querySelector("#player-o h1");
+  const _pOScore = document.querySelector("#player-o p");
 
   const getSquares = () => {
     return _squares;
@@ -75,7 +101,7 @@ const displayController = (() => {
     _message.textContent = `${player.getName()}'s turn`;
   };
 
-  const showResult = (player) => {
+  const showWinner = (player) => {
     if (player) {
       _message.textContent = `${player.getName()} wins`;
     } else {
@@ -113,6 +139,13 @@ const displayController = (() => {
     _message.style.display = "block";
   };
 
+  const showScore = (playerX, playerO) => {
+    _pXName.textContent = playerX.getName();
+    _pXScore.textContent = playerX.getScore();
+    _pOName.textContent = playerO.getName();
+    _pOScore.textContent = playerO.getScore();
+  };
+
   const reset = () => {
     _squares.forEach((square) => {
       square.textContent == "x"
@@ -129,7 +162,8 @@ const displayController = (() => {
     showLockBoard,
     hideLockBoard,
     addSymbolToBoard,
-    showResult,
+    showWinner,
+    showScore,
     showForm,
     hideForm,
     reset,
@@ -141,6 +175,8 @@ const gameController = (() => {
   const _form = document.querySelector("form");
   const _pX = document.getElementById("playerX");
   const _pO = document.getElementById("playerO");
+  const _startBtn = document.getElementById("startBtn");
+  const _restartBtn = document.getElementById("restartBtn");
 
   const _winningConditions = [
     [1, 2, 3],
@@ -152,33 +188,15 @@ const gameController = (() => {
     [1, 5, 9],
     [3, 5, 7],
   ];
+
   let _playerX = Player("x");
   let _playerO = Player("o");
-
   let _currentPlayer = _playerX;
   let _pChoices;
   let _winner = false;
 
-  const _startBtn = document.getElementById("startBtn");
-  const _restartBtn = document.getElementById("restartBtn");
-
   displayController.showLockBoard();
   _restartBtn.setAttribute("disabled", "disabled");
-
-  _form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    _playerX = Player("x", _pX.value);
-    _playerO = Player("o", _pO.value);
-
-    _form.reset();
-
-    _currentPlayer = _playerX;
-    _restartBtn.removeAttribute("disabled");
-    displayController.hideForm(_form);
-    displayController.hideLockBoard();
-    displayController.showTurn(_currentPlayer);
-    gameBoard.reset(_playerX, _playerO);
-  });
 
   displayController.getSquares().forEach((square) => {
     square.addEventListener("click", () => {
@@ -198,10 +216,12 @@ const gameController = (() => {
       });
 
       if (_winner) {
-        displayController.showResult(_currentPlayer);
+        displayController.showWinner(_currentPlayer);
+        _currentPlayer.incrementScore();
         _startBtn.removeAttribute("disabled");
+        displayController.showScore(_playerX, _playerO);
       } else if (gameBoard.getGbLength() == 9) {
-        displayController.showResult();
+        displayController.showWinner();
         _startBtn.removeAttribute("disabled");
       } else {
         _startBtn.setAttribute("disabled", "disabled");
@@ -212,8 +232,26 @@ const gameController = (() => {
     });
   });
 
+  _form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    _playerX = Player("x", _pX.value);
+    _playerO = Player("o", _pO.value);
+
+    _form.reset();
+
+    _currentPlayer = _playerX;
+    _restartBtn.removeAttribute("disabled");
+    displayController.hideForm(_form);
+    displayController.hideLockBoard();
+    displayController.showTurn(_currentPlayer);
+    displayController.showScore(_playerX, _playerO);
+    gameBoard.reset(_playerX, _playerO);
+  });
+
   _startBtn.addEventListener("click", () => {
     _winner = false;
+    _playerX.resetScore();
+    _playerO.resetScore();
     gameBoard.reset(_playerX, _playerO);
     displayController.showLockBoard();
     displayController.showForm(_form);

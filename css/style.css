@@ -72,6 +72,32 @@ main {
 
 #board {
   grid-area: board;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-areas: "x-infos gameboard o-infos";
+}
+
+.infos {
+  display: grid;
+  place-content: center;
+}
+
+.infos h1 {
+  text-align: center;
+}
+
+.infos p {
+  font-size: 10rem;
+  margin: 2rem 0;
+}
+
+#player-x {
+  grid-area: x-infos;
+  color: var(--secondary-color);
+}
+
+#player-o {
+  grid-area: o-infos;
+  color: var(--primary-color);
 }
 
 #message {
@@ -88,6 +114,7 @@ main {
 }
 
 #gameboard {
+  grid-area: gameboard;
   background-color: var(--accent-color);
   display: grid;
   grid-template-columns: repeat(3, minmax(120px, 1fr));
