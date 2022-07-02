@@ -146,6 +146,18 @@ const displayController = (() => {
     _pOScore.textContent = playerO.getScore();
   };
 
+  const toggleAI = (aiBtn, form) => {
+    if (aiBtn.checked) {
+      form.elements[1].labels[0].style.color = "#ccc";
+      form.elements[1].value = "Computer (AI)";
+      form.elements[1].setAttribute("disabled", "disabled");
+    } else {
+      form.elements[1].labels[0].style.color = "#000";
+      form.elements[1].value = "";
+      form.elements[1].removeAttribute("disabled");
+    }
+  };
+
   const reset = () => {
     _squares.forEach((square) => {
       square.textContent == "x"
@@ -164,6 +176,7 @@ const displayController = (() => {
     addSymbolToBoard,
     showWinner,
     showScore,
+    toggleAI,
     showForm,
     hideForm,
     reset,
@@ -177,6 +190,7 @@ const gameController = (() => {
   const _pO = document.getElementById("playerO");
   const _startBtn = document.getElementById("startBtn");
   const _restartBtn = document.getElementById("restartBtn");
+  const _aiBtn = document.getElementById("ai");
 
   const _winningConditions = [
     [1, 2, 3],
@@ -197,6 +211,7 @@ const gameController = (() => {
 
   displayController.showLockBoard();
   _restartBtn.setAttribute("disabled", "disabled");
+  displayController.toggleAI(_aiBtn, _form);
 
   displayController.getSquares().forEach((square) => {
     square.addEventListener("click", () => {
@@ -219,12 +234,15 @@ const gameController = (() => {
         displayController.showWinner(_currentPlayer);
         _currentPlayer.incrementScore();
         _startBtn.removeAttribute("disabled");
+        _aiBtn.removeAttribute("disabled");
         displayController.showScore(_playerX, _playerO);
       } else if (gameBoard.getGbLength() == 9) {
         displayController.showWinner();
         _startBtn.removeAttribute("disabled");
+        _aiBtn.removeAttribute("disabled");
       } else {
         _startBtn.setAttribute("disabled", "disabled");
+        _aiBtn.setAttribute("disabled", "disabled");
         // Assuming player 1 is X we set next player based on gameboard array size
         _currentPlayer = gameBoard.getGbLength() % 2 == 1 ? _playerO : _playerX;
         displayController.showTurn(_currentPlayer);
@@ -255,6 +273,10 @@ const gameController = (() => {
     gameBoard.reset(_playerX, _playerO);
     displayController.showLockBoard();
     displayController.showForm(_form);
+  });
+
+  _aiBtn.addEventListener("click", (e) => {
+    displayController.toggleAI(e.target, _form);
   });
 
   _restartBtn.addEventListener("click", () => {
