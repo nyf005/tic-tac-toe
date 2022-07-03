@@ -58,6 +58,16 @@ const Player = (symbol, name) => {
 const gameBoard = (() => {
   // odd number for pX and even number for pO
   let _gameboard = [];
+  const _winningConditions = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+    [1, 4, 7],
+    [2, 5, 8],
+    [3, 6, 9],
+    [1, 5, 9],
+    [3, 5, 7],
+  ];
   let _aiPossibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   // Add index of square chosen by player to array
@@ -65,19 +75,34 @@ const gameBoard = (() => {
     if (!(index > 0 && index < 10) || _gameboard.includes(index)) return;
     _gameboard.push(index);
     player.addChoice(index);
+  };
 
+  const getAIChoice = (previousPlayerChoice) => {
     // Update AI possibilities
     for (let i = 0; i < _aiPossibilities.length; i++) {
-      if (_aiPossibilities[i] == index) {
+      if (_aiPossibilities[i] == previousPlayerChoice) {
         _aiPossibilities.splice(i, 1);
       }
     }
-  };
-
-  const getAIChoice = () => {
     return _aiPossibilities[
       Math.floor(Math.random() * _aiPossibilities.length)
     ];
+  };
+
+  const checkWinner = (currentPlayer) => {
+    let isWinner = false;
+
+    // Check if there is a winner
+    _winningConditions.forEach((condition) => {
+      // Return true if current player choices contains each value of the current winning condition
+      if (
+        condition.every((value) => currentPlayer.getChoices().includes(value))
+      ) {
+        isWinner = true;
+      }
+    });
+
+    return isWinner;
   };
 
   const getGbLength = () => {
@@ -92,7 +117,7 @@ const gameBoard = (() => {
     displayController.reset();
   };
 
-  return { setChoice, getAIChoice, reset, getGbLength };
+  return { setChoice, getAIChoice, checkWinner, reset, getGbLength };
 })();
 
 // DISPLAY CONTROLLER
@@ -136,8 +161,8 @@ const displayController = (() => {
     _locker.style.display = "none";
   };
 
-  const addSymbolToBoard = (square, player, winner) => {
-    if (square.textContent != "" || winner) return;
+  const addSymbolToBoard = (square, player) => {
+    if (square.textContent != "" || gameBoard.checkWinner(player)) return;
     player.getSymbol() == "x"
       ? square.classList.add("player-x")
       : square.classList.add("player-o");
@@ -208,22 +233,9 @@ const gameController = (() => {
   const _aiBtn = document.getElementById("ai");
   const _aiBlock = document.querySelector("#controls .form-field");
 
-  const _winningConditions = [
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9],
-    [1, 4, 7],
-    [2, 5, 8],
-    [3, 6, 9],
-    [1, 5, 9],
-    [3, 5, 7],
-  ];
-
   let _playerX = Player("x");
   let _playerO = Player("o");
   let _currentPlayer = _playerX;
-  let _pChoices;
-  let _winner = false;
 
   displayController.showLockBoard();
   _restartBtn.setAttribute("disabled", "disabled");
@@ -233,20 +245,9 @@ const gameController = (() => {
     square.addEventListener("click", () => {
       let index = square.getAttribute("data-index");
       gameBoard.setChoice(index, _currentPlayer);
-      displayController.addSymbolToBoard(square, _currentPlayer, _winner);
+      displayController.addSymbolToBoard(square, _currentPlayer);
 
-      // Retrieve the updated array of current player choices
-      _pChoices = _currentPlayer.getChoices();
-
-      // Check if there is a winner
-      _winningConditions.forEach((condition) => {
-        // Return true if current player choices contains each value of the current winning condition
-        if (condition.every((value) => _pChoices.includes(value))) {
-          _winner = true;
-        }
-      });
-
-      if (_winner) {
+      if (gameBoard.checkWinner(_currentPlayer)) {
         displayController.showWinner(_currentPlayer);
         _currentPlayer.incrementScore();
         _startBtn.removeAttribute("disabled");
@@ -265,7 +266,7 @@ const gameController = (() => {
 
         if (_currentPlayer.getName() == "Computer") {
           document
-            .querySelector(`[data-index="${gameBoard.getAIChoice()}"]`)
+            .querySelector(`[data-index="${gameBoard.getAIChoice(index)}"]`)
             .click();
         }
       }
