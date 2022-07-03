@@ -12,7 +12,7 @@ const Player = (symbol, name) => {
     return _playerSymbol;
   };
 
-  getName = () => {
+  const getName = () => {
     return _playerName
       ? _playerName[0].toUpperCase() + _playerName.slice(1).toLowerCase()
       : `Player ${_playerSymbol.toUpperCase()}`;
@@ -58,12 +58,26 @@ const Player = (symbol, name) => {
 const gameBoard = (() => {
   // odd number for pX and even number for pO
   let _gameboard = [];
+  let _aiPossibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   // Add index of square chosen by player to array
   const setChoice = (index, player) => {
     if (!(index > 0 && index < 10) || _gameboard.includes(index)) return;
     _gameboard.push(index);
     player.addChoice(index);
+
+    // Update AI possibilities
+    for (let i = 0; i < _aiPossibilities.length; i++) {
+      if (_aiPossibilities[i] == index) {
+        _aiPossibilities.splice(i, 1);
+      }
+    }
+  };
+
+  const getAIChoice = () => {
+    return _aiPossibilities[
+      Math.floor(Math.random() * _aiPossibilities.length)
+    ];
   };
 
   const getGbLength = () => {
@@ -72,12 +86,13 @@ const gameBoard = (() => {
 
   const reset = (playerX, playerO) => {
     _gameboard = [];
+    _aiPossibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     playerX.resetChoices();
     playerO.resetChoices();
     displayController.reset();
   };
 
-  return { setChoice, reset, getGbLength };
+  return { setChoice, getAIChoice, reset, getGbLength };
 })();
 
 // DISPLAY CONTROLLER
@@ -149,7 +164,7 @@ const displayController = (() => {
   const toggleAI = (aiBtn, form) => {
     if (aiBtn.checked) {
       form.elements[1].labels[0].style.color = "#ccc";
-      form.elements[1].value = "Computer (AI)";
+      form.elements[1].value = `Computer`;
       form.elements[1].setAttribute("disabled", "disabled");
     } else {
       form.elements[1].labels[0].style.color = "#000";
@@ -191,6 +206,7 @@ const gameController = (() => {
   const _startBtn = document.getElementById("startBtn");
   const _restartBtn = document.getElementById("restartBtn");
   const _aiBtn = document.getElementById("ai");
+  const _aiBlock = document.querySelector("#controls .form-field");
 
   const _winningConditions = [
     [1, 2, 3],
@@ -246,6 +262,12 @@ const gameController = (() => {
         // Assuming player 1 is X we set next player based on gameboard array size
         _currentPlayer = gameBoard.getGbLength() % 2 == 1 ? _playerO : _playerX;
         displayController.showTurn(_currentPlayer);
+
+        if (_currentPlayer.getName() == "Computer") {
+          document
+            .querySelector(`[data-index="${gameBoard.getAIChoice()}"]`)
+            .click();
+        }
       }
     });
   });
@@ -264,6 +286,7 @@ const gameController = (() => {
     displayController.showTurn(_currentPlayer);
     displayController.showScore(_playerX, _playerO);
     gameBoard.reset(_playerX, _playerO);
+    _aiBlock.style.display = "none";
   });
 
   _startBtn.addEventListener("click", () => {
@@ -273,6 +296,9 @@ const gameController = (() => {
     gameBoard.reset(_playerX, _playerO);
     displayController.showLockBoard();
     displayController.showForm(_form);
+    _aiBlock.style.display = "flex";
+    _aiBtn.checked = false;
+    displayController.toggleAI(_aiBtn, _form);
   });
 
   _aiBtn.addEventListener("click", (e) => {
@@ -285,5 +311,6 @@ const gameController = (() => {
     displayController.showTurn(_currentPlayer);
     gameBoard.reset(_playerX, _playerO);
     _startBtn.removeAttribute("disabled");
+    _aiBtn.removeAttribute("disabled");
   });
 })();
