@@ -245,8 +245,8 @@ const gameController = (() => {
   let _isWinner = false;
 
   displayController.showLockBoard();
+  _aiBtn.setAttribute("disabled", "disabled");
   _restartBtn.setAttribute("disabled", "disabled");
-  displayController.toggleAI(_aiBtn, _form);
 
   displayController.getSquares().forEach((square) => {
     square.addEventListener("click", () => {
@@ -310,9 +310,11 @@ const gameController = (() => {
     displayController.showLockBoard();
     displayController.hideScore();
     displayController.showForm(_form);
+
     displayController.toggleAI(_aiBtn, _form);
     _aiBlock.style.display = "flex";
-    _aiBtn.checked = false;
+    _aiBtn.removeAttribute("disabled");
+
     _restartBtn.setAttribute("disabled", "disabled");
   });
 

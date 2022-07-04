@@ -331,6 +331,11 @@ input[type="checkbox"]:checked::after {
   box-shadow: -2px 4px 3px rgba(0, 0, 0, 0.05);
 }
 
+input[type="checkbox"]:disabled {
+  background-color: #eee;
+  box-shadow: inset -30px 0 0 0 #eee;
+}
+
 #controls label {
   text-align: center;
 }
