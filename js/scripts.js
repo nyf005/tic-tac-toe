@@ -1,6 +1,6 @@
 // Rule of thumb:
 // if you only ever need ONE of something (gameBoard, displayController), use a module.
-// If you need multiples of something (players!), create them with factories.
+// If you need multiples of something (players! we mean create instance of them), create them with factories.
 
 const Player = (symbol, name) => {
   let _playerSymbol = symbol;
@@ -34,11 +34,10 @@ const Player = (symbol, name) => {
     return _score;
   };
 
-  const resetScore = () => {
-    _score = 0;
-  };
-
-  const resetChoices = () => {
+  const reset = (type) => {
+    if (type == "new") {
+      _score = 0;
+    }
     _choices = [];
   };
 
@@ -49,8 +48,7 @@ const Player = (symbol, name) => {
     addChoice,
     getScore,
     incrementScore,
-    resetChoices,
-    resetScore,
+    reset,
   };
 };
 
@@ -112,9 +110,16 @@ const gameBoard = (() => {
   const reset = (playerX, playerO) => {
     _gameboard = [];
     _aiPossibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    playerX.resetChoices();
-    playerO.resetChoices();
-    displayController.reset();
+    playerX.reset();
+    playerO.reset();
+    // Remove all marks from the board
+    displayController.getSquares().forEach((square) => {
+      square.textContent == "x"
+        ? square.classList.remove("player-x")
+        : square.classList.remove("player-o");
+      square.textContent = "";
+    });
+    displayController.hideLockBoard();
   };
 
   return { setChoice, getAIChoice, checkWinner, reset, getGbLength };
@@ -141,7 +146,8 @@ const displayController = (() => {
     _message.textContent = `${player.getName()}'s turn`;
   };
 
-  const showWinner = (player) => {
+  const showResult = (player) => {
+    let isEndGame = true;
     if (player) {
       _message.textContent = `${player.getName()} wins`;
     } else {
@@ -150,10 +156,13 @@ const displayController = (() => {
     }
 
     _locker.innerHTML = "<p>Game Over</p>";
-    showLockBoard();
+    showLockBoard(isEndGame);
   };
 
-  const showLockBoard = () => {
+  const showLockBoard = (isEnd) => {
+    if (!isEnd) {
+      _locker.innerHTML = "";
+    }
     _locker.style.display = "grid";
   };
 
@@ -161,8 +170,8 @@ const displayController = (() => {
     _locker.style.display = "none";
   };
 
-  const addSymbolToBoard = (square, player) => {
-    if (square.textContent != "" || gameBoard.checkWinner(player)) return;
+  const addSymbolToBoard = (square, player, isWinner) => {
+    if (square.textContent != "" || isWinner) return;
     player.getSymbol() == "x"
       ? square.classList.add("player-x")
       : square.classList.add("player-o");
@@ -186,6 +195,13 @@ const displayController = (() => {
     _pOScore.textContent = playerO.getScore();
   };
 
+  const hideScore = () => {
+    _pXName.textContent = "";
+    _pXScore.textContent = "";
+    _pOName.textContent = "";
+    _pOScore.textContent = "";
+  };
+
   const toggleAI = (aiBtn, form) => {
     if (aiBtn.checked) {
       form.elements[1].labels[0].style.color = "#ccc";
@@ -198,36 +214,26 @@ const displayController = (() => {
     }
   };
 
-  const reset = () => {
-    _squares.forEach((square) => {
-      square.textContent == "x"
-        ? square.classList.remove("player-x")
-        : square.classList.remove("player-o");
-      square.textContent = "";
-    });
-    hideLockBoard();
-  };
-
   return {
     getSquares,
     showTurn,
     showLockBoard,
     hideLockBoard,
     addSymbolToBoard,
-    showWinner,
+    showResult,
     showScore,
+    hideScore,
     toggleAI,
     showForm,
     hideForm,
-    reset,
   };
 })();
 
 // GAME CONTROLLER
 const gameController = (() => {
   const _form = document.querySelector("form");
-  const _pX = document.getElementById("playerX");
-  const _pO = document.getElementById("playerO");
+  const _pXInput = document.getElementById("playerX");
+  const _pOInput = document.getElementById("playerO");
   const _startBtn = document.getElementById("startBtn");
   const _restartBtn = document.getElementById("restartBtn");
   const _aiBtn = document.getElementById("ai");
@@ -236,6 +242,7 @@ const gameController = (() => {
   let _playerX = Player("x");
   let _playerO = Player("o");
   let _currentPlayer = _playerX;
+  let _isWinner = false;
 
   displayController.showLockBoard();
   _restartBtn.setAttribute("disabled", "disabled");
@@ -245,16 +252,19 @@ const gameController = (() => {
     square.addEventListener("click", () => {
       let index = square.getAttribute("data-index");
       gameBoard.setChoice(index, _currentPlayer);
-      displayController.addSymbolToBoard(square, _currentPlayer);
+      displayController.addSymbolToBoard(square, _currentPlayer, _isWinner);
 
-      if (gameBoard.checkWinner(_currentPlayer)) {
-        displayController.showWinner(_currentPlayer);
+      _isWinner = gameBoard.checkWinner(_currentPlayer);
+
+      if (_isWinner) {
         _currentPlayer.incrementScore();
+        displayController.showScore(_playerX, _playerO);
+
+        displayController.showResult(_currentPlayer);
         _startBtn.removeAttribute("disabled");
         _aiBtn.removeAttribute("disabled");
-        displayController.showScore(_playerX, _playerO);
       } else if (gameBoard.getGbLength() == 9) {
-        displayController.showWinner();
+        displayController.showResult();
         _startBtn.removeAttribute("disabled");
         _aiBtn.removeAttribute("disabled");
       } else {
@@ -275,31 +285,35 @@ const gameController = (() => {
 
   _form.addEventListener("submit", (e) => {
     e.preventDefault();
-    _playerX = Player("x", _pX.value);
-    _playerO = Player("o", _pO.value);
+    _playerX = Player("x", _pXInput.value);
+    _playerO = Player("o", _pOInput.value);
 
     _form.reset();
+    _aiBtn.checked = false;
 
     _currentPlayer = _playerX;
-    _restartBtn.removeAttribute("disabled");
+
+    gameBoard.reset(_playerX, _playerO);
+
     displayController.hideForm(_form);
     displayController.hideLockBoard();
     displayController.showTurn(_currentPlayer);
     displayController.showScore(_playerX, _playerO);
-    gameBoard.reset(_playerX, _playerO);
+
     _aiBlock.style.display = "none";
+    _restartBtn.removeAttribute("disabled");
   });
 
   _startBtn.addEventListener("click", () => {
-    _winner = false;
-    _playerX.resetScore();
-    _playerO.resetScore();
-    gameBoard.reset(_playerX, _playerO);
+    _isWinner = false;
+    gameBoard.reset(_playerX, _playerO, "new");
     displayController.showLockBoard();
+    displayController.hideScore();
     displayController.showForm(_form);
+    displayController.toggleAI(_aiBtn, _form);
     _aiBlock.style.display = "flex";
     _aiBtn.checked = false;
-    displayController.toggleAI(_aiBtn, _form);
+    _restartBtn.setAttribute("disabled", "disabled");
   });
 
   _aiBtn.addEventListener("click", (e) => {
@@ -307,7 +321,7 @@ const gameController = (() => {
   });
 
   _restartBtn.addEventListener("click", () => {
-    _winner = false;
+    _isWinner = false;
     _currentPlayer = _playerX;
     displayController.showTurn(_currentPlayer);
     gameBoard.reset(_playerX, _playerO);
