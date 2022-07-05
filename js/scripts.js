@@ -66,7 +66,7 @@ const gameBoard = (() => {
     [1, 5, 9],
     [3, 5, 7],
   ];
-  let _aiPossibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  let _emptyCells = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   // Add index of square chosen by player to array
   const setChoice = (index, player) => {
@@ -77,25 +77,22 @@ const gameBoard = (() => {
 
   const getAIChoice = (previousPlayerChoice) => {
     // Update AI possibilities
-    for (let i = 0; i < _aiPossibilities.length; i++) {
-      if (_aiPossibilities[i] == previousPlayerChoice) {
-        _aiPossibilities.splice(i, 1);
+    for (let i = 0; i < _emptyCells.length; i++) {
+      if (_emptyCells[i] == previousPlayerChoice) {
+        _emptyCells.splice(i, 1);
       }
     }
-    return _aiPossibilities[
-      Math.floor(Math.random() * _aiPossibilities.length)
-    ];
+
+    return _emptyCells[Math.floor(Math.random() * _emptyCells.length)];
   };
 
-  const checkWinner = (currentPlayer) => {
+  const checkWinner = (player) => {
     let isWinner = false;
 
     // Check if there is a winner
     _winningConditions.forEach((condition) => {
       // Return true if current player choices contains each value of the current winning condition
-      if (
-        condition.every((value) => currentPlayer.getChoices().includes(value))
-      ) {
+      if (condition.every((value) => player.getChoices().includes(value))) {
         isWinner = true;
       }
     });
@@ -109,7 +106,7 @@ const gameBoard = (() => {
 
   const reset = (playerX, playerO) => {
     _gameboard = [];
-    _aiPossibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    _emptyCells = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     playerX.reset();
     playerO.reset();
     // Remove all marks from the board
