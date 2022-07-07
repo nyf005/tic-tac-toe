@@ -339,3 +339,37 @@ input[type="checkbox"]:disabled {
 #controls label {
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  #board {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "x-infos o-infos"
+      "gameboard gameboard";
+  }
+
+  #gameboard {
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+    grid-template-rows: repeat(3, minmax(120px, 1fr));
+    place-self: center;
+  }
+
+  .infos {
+    gap: 1rem;
+    margin: 1rem;
+  }
+
+  .infos h1,
+  .infos p {
+    margin: 0;
+  }
+  .infos h1 {
+    font-size: 1rem;
+  }
+
+  .infos p {
+    font-size: 2rem;
+    text-align: center;
+  }
+}
