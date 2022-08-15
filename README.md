@@ -6,7 +6,7 @@ This is simple tic tac toe game you can play in your browser
 
 ## Links
 
-- [Try Tic Tac Toe here!](https://github.com/nyf005/tic-tac-toe)
+- [Try Tic Tac Toe here!](https://nyf005.github.io/tic-tac-toe)
 - [Link to the Assignment](https://www.theodinproject.com/lessons/node-path-javascript-tic-tac-toe)
 
 ## Things I practiced
